@@ -1,0 +1,3 @@
+For i = 0 To DataGridView1.Columns.Count - 1 
+    DataGridView1.AutoResizeColumn(i) 
+Next 
