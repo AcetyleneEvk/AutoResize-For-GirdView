@@ -1,0 +1,4 @@
+e.Alt = True / False (KeyDown Alt)
+e.Shift = True / False (KeyDown Shift)
+e.Control = True / False (KeyDown Control)
+e.KeyCode = Asc
