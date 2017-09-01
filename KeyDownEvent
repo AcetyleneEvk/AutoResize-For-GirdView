@@ -2,3 +2,22 @@ e.Alt = True / False (KeyDown Alt)
 e.Shift = True / False (KeyDown Shift)
 e.Control = True / False (KeyDown Control)
 e.KeyCode = Asc
+
+KeyCode :
+BackSpace	 8
+Enter	 13
+Shift	 16
+Ctrl	 17
+Alt	 18
+CapsLock	 20
+Esc	 27
+Space 32
+PageUp、PageDown	 33、34
+End	 35
+Home	 36
+(Keys.Left、Keys.Up、Keys.Right、Keys.Down)	 37、38、39、40
+Insert	 45
+Delete	 46
+0 ~ 9	 48 ~ 57
+A ~ Z	 65 ~ 90
+F1 ~ F12	 112 ~ 123
