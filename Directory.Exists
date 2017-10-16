@@ -1,0 +1,12 @@
+        Dim SavePath As String = "C:\DomesticLabel\F1Class\F1ClassCompany.txt"
+        Dim sw As StreamWriter
+        Dim l_strPath As String = "C:\DomesticLabel\D5Class\"
+        If Not Directory.Exists(l_strPath) Then
+            Directory.CreateDirectory(l_strPath)
+        End If
+        If File.Exists("C:\DomesticLabel\F1Class\F1ClassCompany.txt") = False Then 'New
+            sw = New StreamWriter(SavePath, False)
+            'sw.WriteLine("")
+            sw.Flush()
+            sw.Close()
+        End If
