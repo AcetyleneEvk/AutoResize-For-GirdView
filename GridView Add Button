@@ -1,3 +1,50 @@
+        If gv_ExcetionDetail.Rows.Count > 0 Then
+                Dim BmpColumn As DataGridViewDisableButtonColumn = New DataGridViewDisableButtonColumn()
+                Dim BtnExport As DataGridViewDisableButtonColumn = New DataGridViewDisableButtonColumn()
+                Dim BtnDelete As DataGridViewDisableButtonColumn = New DataGridViewDisableButtonColumn()
+                BmpColumn.Name = "Edit"
+                BtnExport.Name = "Export"
+                BtnDelete.Name = "Delete"
+
+                BmpColumn.DefaultCellStyle.NullValue = Nothing
+                BtnExport.DefaultCellStyle.NullValue = Nothing
+                BtnDelete.DefaultCellStyle.NullValue = Nothing
+
+                BmpColumn.HeaderText = "異動"
+                BtnExport.HeaderText = "拋轉"
+                BtnDelete.HeaderText = "刪除"
+
+                gv_ExcetionDetail.Columns.Insert(0, BtnExport)
+                gv_ExcetionDetail.Columns.Insert(1, BtnDelete)
+                gv_ExcetionDetail.Columns.Insert(15, BmpColumn)
+
+
+                For Each row As DataGridViewRow In gv_ExcetionDetail.Rows
+                    row.Cells("Edit").Value = "異動"
+                    row.Cells("Export").Value = "拋轉"
+                    row.Cells("Delete").Value = "刪除"
+                    Application.DoEvents()
+                Next
+                Me.gv_ExcetionDetail.DefaultCellStyle.Font = New Font("Tahoma", 13)
+                Me.gv_ExcetionDetail.RowHeadersDefaultCellStyle.Font = New Font("Tahoma", 13)
+                If gv_ExcetionDetail.Rows.Count > 0 Then
+                    gvPreOrderChangeStyle()
+                    gvExcetionDeleteVisible()
+                End If
+                gv_ExcetionDetail.Refresh()
+            End If
+
+
+'==========================
+
+Public Class DataGridViewDisableButtonColumn
+    Inherits DataGridViewButtonColumn
+
+    Public Sub New()
+        Me.CellTemplate = New DataGridViewDisableButtonCell()
+    End Sub
+End Class
+
 Public Class DataGridViewDisableButtonCell
     Inherits DataGridViewButtonCell
 
