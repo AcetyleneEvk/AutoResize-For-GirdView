@@ -1,0 +1,44 @@
+Declare @Date nVarchar(10);
+Set @Date = '2017/10/16';
+
+Declare @OrderType nVarchar(20),@ProductionCode nVarchar(20),@ProductionName nVarchar(50),@Size nVarchar(50),@Batch nVarchar(20);
+Declare @LeftWeight Int,@OldBatch nVarchar(20),@OldType nVarchar(10),@OldLastWeight Int,@OldProductName nVarchar(50),@OldSize nVarchar(50);
+Declare @FinalSource Table (Type nVarchar(50),ProductName nVarchar(50),Size nVarchar(50),Batch nVarchar(15),LeftWeight Int);
+Declare Confirm_Cursor CURSOR FOR
+---SQL 丟這
+
+--End
+
+OPEN Confirm_Cursor;  
+FETCH NEXT FROM Confirm_Cursor into @OrderType,@ProductionName,@Size,@Batch,@LeftWeight
+WHILE @@FETCH_STATUS = 0
+	BEGIN  
+		if @OldType <> ''
+		Begin
+			if @OldType = @OrderType And @OldLastWeight <> 0 And @OldBatch <> @Batch 
+			Begin
+				Insert into @FinalSource (Type,ProductName,Size,Batch,LeftWeight)  Values (@OldType,@OldProductName,@OldSize,@OldBatch,@OldLastWeight)
+			End
+			if @OldType <> @OrderType And @OldLastWeight <> 0 And @OldBatch = @Batch 
+			Begin
+				Insert into @FinalSource (Type,ProductName,Size,Batch,LeftWeight)  Values (@OldType,@OldProductName,@OldSize,@OldBatch,@OldLastWeight)
+			End	
+			if @OldType <> @OrderType And @OldLastWeight <> 0 And @OldBatch <> @Batch 
+			Begin
+				Insert into @FinalSource (Type,ProductName,Size,Batch,LeftWeight)  Values (@OldType,@OldProductName,@OldSize,@OldBatch,@OldLastWeight)
+			End	
+		End
+		Set @OldBatch = @Batch
+		Set @OldType = @OrderType
+		Set @OldLastWeight = @LeftWeight
+		Set @OldProductName = @ProductionName
+		Set @OldSize = @Size
+
+		FETCH NEXT FROM Confirm_Cursor INTO @OrderType,@ProductionName,@Size,@Batch,@LeftWeight
+	END;  
+CLOSE Confirm_Cursor;  
+DEALLOCATE Confirm_Cursor;
+
+select *
+From @FinalSource
+
