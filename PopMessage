@@ -1,0 +1,28 @@
+ ScriptManager.RegisterStartupScript(Me, Me.GetType, "", "UpdateCheck()", True) 
+ 
+ 
+     <script type="text/javascript">
+        function check() {
+            var id = confirm("輸入的總支數,已超過訂單支數.\n 您是還要繼續報工嗎?");
+            if (id) {
+                $('#<%=btOverPCS.ClientID %>').click();
+            }
+        }
+
+        function NoOrder() {
+            var id = confirm("找不到訂單支數!");
+            if (id) {
+                $('#<%=btOverPCS.ClientID %>').click();
+            }
+        }
+
+        function UpdateCheck() {
+            var id = confirm("將要更新的總支數,已超過訂單支數.\n 您是還要繼續更新支數嗎?");
+            if (id) {
+                $('#<%=btOverPCSUpdate.ClientID %>').click();
+            }
+            else {
+                $('#<%=btCancel.ClientID %>').click();
+            }
+        }
+    </script>
