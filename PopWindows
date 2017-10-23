@@ -1,0 +1,21 @@
+    <script type="text/javascript">
+        function ShowDIV() {
+            $.OpenDialog({
+                overlay: 1,
+                overlayColor: '#A9A9A9',
+                draggable: 1,
+                overlayOpacity: 60,
+                height: 130,
+                width: 500,
+                loader: 1,
+                loaderImagePath: 'animationProcessing.gif',
+                loaderHeight: 16,
+                loaderWidth: 17,
+                windowSourceID: '#DetailToOperaotr',    <%-- div ID --%>
+                borderColor: '#3366CC'
+            });
+        }
+    </script>
+    
+    
+     ScriptManager.RegisterStartupScript(Me, Me.GetType, "show", "ShowDIV();", True)
