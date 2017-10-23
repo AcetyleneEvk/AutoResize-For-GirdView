@@ -1,0 +1,24 @@
+    <style type="text/css">
+        .jqmWindowToGrView {
+            display: none;
+            position: absolute;
+            /** top: 10%; **/
+            /*left: 18%; */
+            /*margin-top: -50px;*/
+            /*margin-left: -300px;*/
+            background-color: #d1ddf1;
+            width: 1980px;
+            height: 1080px;
+            color: #333;
+            border: 1px solid black;
+            padding-left: 12px;
+            padding-right: 12px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tdspace {
+            white-space: nowrap;
+            height: 50%;
+        }
+    </style>
