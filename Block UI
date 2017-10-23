@@ -1,0 +1,85 @@
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+            prm.add_pageLoaded(BindEvents);
+            prm.add_initializeRequest(InitializEvent);
+            function InitializEvent(sender, args) {
+                var jq = $(args.get_postBackElement());
+                jqClass = jq.attr('class');
+                //Error取消
+                if ((jqClass == 'btSave') || (jqClass == 'btModify')) {
+
+                    $.blockUI({
+                        css: {
+                            border: 'none',
+                            padding: '15px',
+                            backgroundColor: '#000',
+                            '-webkit-border-radius': '10px',
+                            '-moz-border-radius': '10px',
+                            opacity: .6,
+                            color: '#fff'
+                        },
+                        message: '<big>資料保存中.....</big>'
+                    });
+                }
+            }
+
+            function BindEvents() {
+
+                $('input').keydown(function () {
+                    if (event.keyCode == 13) { event.keyCode = '9'; }
+                });
+
+                //備註選取
+                $('.ListBoxRemark').dblclick(function () {
+                    var mRemark = $('.mRemark').val();
+                    var NewText = '';
+                    var selectText = '';
+                    $(".ListBoxRemark option:selected").each(function () {
+                        selectText = $(this).text();
+                    });
+                    if (mRemark) {
+                        NewText = mRemark + ' , ' + selectText;
+                    } else {
+                        NewText = selectText;
+                    }
+                    $('.mRemark').val(NewText);
+                });
+
+                //解除BlockUI
+                $.unblockUI();
+
+                $(function ready() {
+
+                    // 只允許允許英數字
+                    $(".sample1").alphanumeric();
+
+                    // 除了允許允許英數字之外，還接受 . , 及空白
+                    $(".sample2").alphanumeric({
+                        allow: "., "
+                    });
+
+                    // 只允許允許小寫英文
+                    $(".sample3").alpha({
+                        nocaps: true
+                    });
+
+                    // 只允許允許數字
+                    $(".sample4").numeric();
+
+                    // 除了允許允許數字之外，還接受 .
+                    $(".sample5").numeric({
+                        allow: "."
+                    });
+
+                    // 自訂規則，除了 . 1 a 之外都能輸入
+                    $(".sample6").alphanumeric({
+                        ichars: '.1'
+                    });
+
+                });
+
+            }
+        });                                      //ready
+    </script>
