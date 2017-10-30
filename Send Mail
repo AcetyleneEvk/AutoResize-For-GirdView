@@ -1,0 +1,65 @@
+Imports System.Web.Mail
+Imports System.Net.Mail
+
+Public Function SendEmail(ByVal ML As MailEntityTEST) As String
+        Try
+            Dim Content As String = Nothing
+            Dim myMail As New System.Net.Mail.MailMessage()
+            myMail.From = New MailAddress("TEST@gmail.com.tw", ML.SendOperator) '發送者
+            myMail.To.Add(ML.ReceiveAccount)  '收件者
+            myMail.SubjectEncoding = Encoding.UTF8  '主題編碼格式
+            myMail.Subject = HttpUtility.HtmlDecode(ML.Topic)    '主題
+            myMail.IsBodyHtml = True    'HTML語法(true:開啟false:關閉)
+            myMail.BodyEncoding = Encoding.UTF8 '內文編碼格式
+            Content = ML.ReceiveOperator & "，您好:<br><br>" & vbNewLine & vbNewLine
+            Content += ML.Content
+            Content += "<br><br> ******此郵件為系統自動發出****請勿直接回覆***"
+            myMail.Body = HttpUtility.HtmlDecode(Content)   '內文
+
+            If ML.AttachmentUrl Is Nothing Then
+            Else
+                myMail.Attachments.Add(New System.Net.Mail.Attachment(ML.AttachmentUrl))  '附件
+            End If
+
+            Dim mySmtp As New SmtpClient()  '建立SMTP連線
+            mySmtp.Credentials = New System.Net.NetworkCredential("TEST@gmail.com.tw", "TEST")  '連線驗證
+            mySmtp.Port = 587 'Gmail SMTP Port
+            mySmtp.Host = "smtp.gmail.com"  'SMTP主機名
+            mySmtp.EnableSsl = True '開啟SSL驗證
+            mySmtp.Send(myMail) '發送
+
+            Dim quString As String = Nothing
+            quString = "INSERT INTO InfoMessage ( [ID], [Name], [Country], [Phone], [DateTime], [Address] ) VALUES ( " + vbNewLine
+            quString += "'" & Now.ToString("yyyy/MM/dd HH:mm:ss") & "'," 'PK 需進行流水碼編碼，或由資料庫自行編碼
+            quString += "'John',"
+            quString += "'USA',"
+            quString += "'" & txt_address.Text & "',"
+            quString += "'" & Now.ToString("yyyy/MM/dd HH:mm:ss") & "',"
+            InsertString(quString)
+            Return "已發送郵件 !!"
+        Catch ex As Exception
+            Return "發送失敗!!!" & vbNewLine & ex.ToString
+        End Try
+    End Function
+
+    Public Class MailEntityTEST
+
+        Public Property ReceiveAccount As System.String
+        Public Property ReceiveOperator As System.String
+        Public Property SendOperator As System.String
+        Public Property Topic As System.String
+        Public Property Content As System.String
+        Public Property AttachmentUrl As System.String
+    End Class
+
+    Protected Sub bt_Save_Click(sender As Object, e As EventArgs) Handles bt_Save.Click
+        Dim MailMsg As String = Nothing
+        Dim MailData As New MailEntityTEST
+        MailData.SendOperator = "SendOperatorName"
+        MailData.ReceiveAccount = "Received@Gamil.com"
+        MailData.ReceiveOperator = "ReceivedOperatorName"
+        MailData.Topic = "TopicMessage"
+        MailData.Content = "Message"
+        MailMsg = "SendOperatorName"
+        MailMsg = SendEmail(MailData)
+    End Sub
