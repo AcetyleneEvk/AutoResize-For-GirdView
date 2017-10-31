@@ -1,0 +1,116 @@
+Imports System.IO
+Imports NPOI.HSSF.UserModel
+Imports NPOI.HSSF.Util
+Imports NPOI.SS.UserModel
+
+Public Class ExportDTtoExcel
+
+
+    '''<summary>
+    '''匯出多個DataTable至多個工作表後，將檔案保存在指定的主機路徑上
+    '''</summary>
+    '''<param name="Dtable">欲匯出的DataTables</param>
+    '''<param name="SheetName">DataTable陣列所對應的Excel工作表名稱，Dtable.Length須與SheetName.Length一致</param>
+    ''' <param name="Folder">資料夾名稱</param>
+    ''' <param name="Word">檔案名稱前導字</param>
+    Public Sub ExportDtUseNOPI(ByVal Dtable() As DataTable,
+                                           ByVal SheetName() As String,
+                                           ByVal Folder As String,
+                                           ByVal Word As String)
+        If Dtable.Length <> SheetName.Length Then
+            Throw New Exception("傳入的DataTable陣列長度與SheetName陣列長度不一致!")
+        End If
+        Dim ExcelBook As New HSSFWorkbook
+        Dim MS As New MemoryStream
+        Dim Titlestyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+        Dim ExRowIndxe As Integer = 0
+        Titlestyle.FillForegroundColor = HSSFColor.GREEN.index 'Imports NPOI.HSSF.Util
+        Titlestyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+
+        '區別單數行與雙數行的style
+        Dim SingleRowStyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+        SingleRowStyle.FillForegroundColor = HSSFColor.GREY_25_PERCENT.index 'Imports NPOI.HSSF.Util
+        SingleRowStyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+        '將資料格式改為Text
+        SingleRowStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@")
+        Dim EvenRowStyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+        EvenRowStyle.FillForegroundColor = HSSFColor.WHITE.index 'Imports NPOI.HSSF.Util
+        EvenRowStyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+        '將資料格式改為Text
+        SingleRowStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@")
+
+        For d As Integer = 0 To Dtable.Length - 1
+            ExRowIndxe = 0
+            Dim sheet As HSSFSheet = ExcelBook.CreateSheet(SheetName(d))
+            Dim headRow As HSSFRow = sheet.CreateRow(ExRowIndxe)
+            '設定Table 的 Title 
+            For K As Integer = 0 To Dtable(d).Columns.Count - 1
+                Dim cell As HSSFCell = headRow.CreateCell(K)
+                cell.SetCellValue(Dtable(d).Columns(K).ColumnName)
+                cell.CellStyle = Titlestyle
+            Next
+            ExRowIndxe += 1
+            For i As Integer = 0 To Dtable(d).Rows.Count - 1
+                Dim SheetRow As HSSFRow = sheet.CreateRow(ExRowIndxe)
+                ExRowIndxe += 1
+                For j As Integer = 0 To Dtable(d).Rows(i).ItemArray.Length - 1
+                    Dim cell As HSSFCell = SheetRow.CreateCell(j)
+                    Dim cellString = Dtable(d).Rows(i).Item(j).ToString
+                    If cellString.Equals("&nbsp;") Then
+                        cellString = ""
+                    End If
+                    'If cellString = "" Then
+                    '    cellString = Nothing
+                    'End If
+                    cell.SetCellValue(cellString)
+                    If i Mod 2 = 0 Then
+                        cell.CellStyle = EvenRowStyle
+                    Else
+                        cell.CellStyle = SingleRowStyle
+                    End If
+                Next
+            Next
+        Next
+        ExcelBook.Write(MS)
+        Dim fs As FileStream = Nothing
+        Try
+            fs = File.Create(ReturnPathToProject(Folder, Word, "xls"))
+            fs.Write(MS.ToArray(), 0, MS.Length)
+            fs.Close()
+
+        Catch ex As Exception
+            Throw ex
+        Finally
+
+            MS.Close()
+            MS.Dispose()
+        End Try
+
+    End Sub
+
+    ''' <summary>
+    ''' 回傳進貨單excel所需的存放路徑
+    ''' </summary>
+    Public Function ReturnPathToProject(ByVal p_path As String, ByVal p_Words As String, p_sname As String) As String
+        Dim path As String = Application.StartupPath + p_path
+        If Not Directory.Exists(path) Then
+            Directory.CreateDirectory(path)
+        End If
+        Dim dir As New DirectoryInfo(path)
+        Dim FileName As String
+        Dim Num As Integer
+        Dim MaxFile As String = dir.GetFiles.Where(Function(p) (p.Name.Contains(Now.ToString("yyyyMMdd")))).Max(Function(p) (p.Name))
+        If Not IsNothing(MaxFile) Then
+            If (MaxFile.Split(".")).Length <> 2 Then
+                Throw New Exception(path + " 中取得的檔案格式有誤!")
+            End If
+            FileName = MaxFile.Split(".")(0)
+            Num = CInt(FileName.Substring(FileName.Length - 2))
+        Else
+            Num = 0
+        End If
+        Dim FullPath As String = path + p_Words + Now.ToString("yyyyMMdd") + String.Format("{0:00}", (Num + 1)) + "." + p_sname
+        Return FullPath
+    End Function
+
+End Class
