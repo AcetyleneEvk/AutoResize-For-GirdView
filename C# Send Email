@@ -1,0 +1,99 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.Mail;
+using System.Net.Mail;
+
+public partial class TESTWeb_Cotect : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+
+    }
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        //設定一字串變數 名為 MailMsg
+        String MailMsg = null; 
+        //取得MailEntityTEST 名為 MailData 並將其 new : 
+        //new的定義等於 取得已定義之項目 防止已有資料造成不必要的錯誤
+        //可參閱C# new  https://docs.microsoft.com/zh-tw/dotnet/csharp/language-reference/keywords/new-operator
+        MailEntityTEST MailData = new MailEntityTEST();
+        //將資料寫入MailData(MailEntityTEST)
+        MailData.SendOperator = txt_Name.Text + " | " + txt_Email.Text; //'發送者姓名
+        MailData.ReceiveAccount = "e1234@hotmail.com"; //'接收者Email
+        MailData.ReceiveOperator = "ReceivedOperatorName"; //'接收者姓名
+        MailData.Topic = "TopicMessage"; //'郵件標題
+        //Environment.NewLine = 在顯示上會下一行 字串與字串間串連使用 + 號
+        //如有兩字串 需要一起顯示 則 "A" + "B" + Environment.NewLine + "C" 則結果為
+        // AB
+        // C
+        MailData.Content = txt_Content.Text + Environment.NewLine + "部門：" + ddl_Dept.SelectedItem.Text; //'內文
+        //將已定義的MailData函數套入Function SendMail
+        MailMsg = SendEmail(MailData); //'取回傳送成功或錯誤 成功 : 已發送郵件 !! / 失敗 : 發送失敗!!! 參閱SendEmail Return
+    }
+
+    //此為Function Sendmail : Function定義為如需呼叫時可使用  參閱 https://docs.microsoft.com/zh-tw/dotnet/csharp/programming-guide/classes-and-structs/methods
+    public virtual String SendEmail(MailEntityTEST ML)
+    {
+        try
+        {
+            String Content = "";
+            //MailEntityTEST ML = new MailEntityTEST();
+            System.Net.Mail.MailMessage myMail = new System.Net.Mail.MailMessage();
+            //            Dim Content As String = Nothing
+            //Dim myMail As New System.Net.Mail.MailMessage()
+            myMail.From = new MailAddress("TEST@gmail.com.tw", ML.SendOperator);
+            //myMail.From = New MailAddress("TEST@gmail.com.tw", ML.SendOperator) '發送者
+            myMail.To.Add(ML.ReceiveAccount); //收件者
+
+            myMail.SubjectEncoding = System.Text.Encoding.UTF8;  //主題編碼格式
+            myMail.Subject = HttpUtility.HtmlDecode(ML.Topic);    //主題
+            myMail.IsBodyHtml = true;    //HTML語法(true:開啟false:關閉)
+            myMail.BodyEncoding = System.Text.Encoding.UTF8; //內文編碼格式
+            //此為內文
+            Content = ML.ReceiveOperator + "，您好:<br><br>" + Environment.NewLine + Environment.NewLine;
+            Content += ML.Content;
+            Content += "<br><br> ******此郵件為系統自動發出****請勿直接回覆***";
+            //內文結束
+            myMail.Body = HttpUtility.HtmlDecode(Content);   //內文轉為HttpUtility
+
+            if (ML.AttachmentUrl == null)
+            {
+
+            }
+            else
+            {
+                myMail.Attachments.Add(new System.Net.Mail.Attachment(ML.AttachmentUrl)); //附件
+            }
+
+            SmtpClient mySmtp = new SmtpClient();
+            mySmtp.Credentials = new System.Net.NetworkCredential("ID", "pw"); //連線驗證
+            mySmtp.Port = 25; //Gmail SMTP Port
+            mySmtp.Host = "smtp.gmail.com";  //SMTP主機名
+            mySmtp.EnableSsl = true; //開啟SSL驗證
+            mySmtp.Send(myMail); //發送
+            return "已發送郵件 !!";
+        }
+        catch (Exception ex)
+        {
+            String Message = "";
+            Message = "發送失敗!!!" + ex.Message;
+            return Message;
+        }
+    }
+}
+
+//先行定義Entity 參閱 https://msdn.microsoft.com/zh-tw/library/bb896341(v=vs.100).aspx
+//可將Entity想為定義群組資料
+public class MailEntityTEST
+{
+    public String ReceiveAccount;
+    public String ReceiveOperator;
+    public String SendOperator;
+    public String Topic;
+    public String Content;
+    public String AttachmentUrl;
+}
