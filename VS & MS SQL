@@ -1,0 +1,41 @@
+    Function InsertString(ByVal quString As String) As String 'To Update or Insert
+        ' Retrieve the connection string stored in the Web.config file.
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As New SqlConnection(connectionString)
+        Try
+            connection.Open()
+            Dim cmd As New SqlCommand
+            cmd = New SqlCommand(quString, connection)
+            cmd.ExecuteNonQuery()
+        Catch ex As Exception
+            GlobalFunction.MsgBox(ex.Message, Me.Page)
+        Finally
+            connection.Dispose()
+            connection.Close()
+        End Try
+        Return quString
+    End Function
+    
+        Function GetCheck(ByVal queryString As String) As DataTable
+        ' Retrieve the connection string stored in the Web.config file.
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim ds As New DataTable()
+        Dim connection As New SqlConnection(connectionString)
+        Try
+            ' Connect to the database and run the query.
+            Dim adapter As New SqlDataAdapter(queryString, connection)
+            ' Fill the DataSet.
+            adapter.Fill(ds)
+        Catch ex As Exception
+            GlobalFunction.MsgBox(ex.Message, Me.Page)
+        Finally
+            connection.Dispose()
+            connection.Close()
+        End Try
+        Return ds
+    End Function
+    
+WebConfig
+    <connectionStrings>
+      <add name="ConnectionString" connectionString="Data Source=127.0.0.1;Initial Catalog=DBName;Persist Security Info=True;User ID=sa;Password=sa" providerName="System.Data.SqlCliet" />nt" />
+    </connectionStrings>
