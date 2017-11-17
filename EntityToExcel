@@ -116,6 +116,12 @@ Public Class ExportDTtoExcel
 End Class
 
 
+                                    'EPSTA
+                                    Dim EPSTA As New List(Of EPSTAEntity)
+                                    'EPSTB
+                                    Dim EPSTB As New List(Of EPSTBEntity)
+                                    'EPSTC
+                                    Dim EPSTC As New List(Of EPSTCEntity)
 
                                     Dim export As New ExportDTtoExcel
                                     export.ExportDtUseNOPI({DT_EPSTA, DT_EPSTB, DT_EPSTC}, {"EPSTA", "EPSTB", "EPSTC"}, "\出貨單資料匯出\", "包裝出貨單")
