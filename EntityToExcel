@@ -114,3 +114,8 @@ Public Class ExportDTtoExcel
     End Function
 
 End Class
+
+
+
+                                    Dim export As New ExportDTtoExcel
+                                    export.ExportDtUseNOPI({DT_EPSTA, DT_EPSTB, DT_EPSTC}, {"EPSTA", "EPSTB", "EPSTC"}, "\出貨單資料匯出\", "包裝出貨單")
