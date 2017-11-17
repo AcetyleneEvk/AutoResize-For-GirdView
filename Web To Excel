@@ -1,0 +1,90 @@
+     '''<summary>
+        '''匯出Excel--
+        '''</summary>
+        '''<param name="Dtable">傳入要轉Excel的DataTable</param>
+        '''<param name="ColumnArray">傳入ColumnCheck(不要的Columns的int陣列)</param>
+        '''<param name="RowArray">傳入RowCheck(不要的Rows的int陣列)</param>
+        ''' <remarks> Ray 2011/05/24</remarks>
+        Public Shared Sub ExportUseNOPI(ByVal Dtable As DataTable, ByVal ColumnArray As Integer(), ByVal RowArray As Integer())
+            Dim ExcelBook As New HSSFWorkbook
+            Dim MS As New MemoryStream
+            Dim sheet As HSSFSheet = ExcelBook.CreateSheet("sheet1")
+            Dim Titlestyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+            Dim ExRowIndxe As Integer = 0
+            Titlestyle.FillForegroundColor = HSSFColor.GREEN.index 'Imports NPOI.HSSF.Util
+            Titlestyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+            '設定框線--------------------
+            setBorder(Titlestyle) '----------------------
+            '設定第3個欄位寬度
+            'sheet.SetColumnWidth(3, 13500)
+            Dim headRow As HSSFRow = sheet.CreateRow(ExRowIndxe)
+            ExRowIndxe += 1
+            '移除不需要的Columns
+            If Not ColumnArray Is Nothing Then
+                For cum = 0 To ColumnArray.Length - 1
+                    Dtable.Columns.RemoveAt(ColumnArray(cum))
+                Next
+            End If
+
+            Dim list As New List(Of DataRow)
+            'int陣列轉 List集合
+            If Not RowArray Is Nothing Then
+
+                For rw = 0 To RowArray.Length - 1
+                    Dim row As DataRow = Dtable.Rows(RowArray(rw))
+                    list.Add(row)
+                Next
+                '移除不需要的Row
+                For r = 0 To list.Count - 1
+                    Dtable.Rows.Remove(list.Item(r))
+                Next
+            End If
+
+            For K As Integer = 0 To Dtable.Columns.Count - 1
+                Dim cell As HSSFCell = headRow.CreateCell(K)
+                cell.SetCellValue(Dtable.Columns(K).ColumnName)
+                cell.CellStyle = Titlestyle
+
+            Next
+
+            '區別單數行與雙數行的style
+            Dim SingleRowStyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+            SingleRowStyle.FillForegroundColor = HSSFColor.GREY_25_PERCENT.index 'Imports NPOI.HSSF.Util
+            SingleRowStyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+            '將資料格式改為Text
+            SingleRowStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@")
+            Dim EvenRowStyle As HSSFCellStyle = ExcelBook.CreateCellStyle()
+            EvenRowStyle.FillForegroundColor = HSSFColor.WHITE.index 'Imports NPOI.HSSF.Util
+            EvenRowStyle.FillPattern = FillPatternType.SOLID_FOREGROUND  'Imports NPOI.SS.UserModel
+            '將資料格式改為Text
+            SingleRowStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@")
+            '設定框線'----------------------
+            setBorder(SingleRowStyle) '----------------------
+            setBorder(EvenRowStyle) '----------------------
+
+            For i As Integer = 0 To Dtable.Rows.Count - 1
+                Dim SheetRow As HSSFRow = sheet.CreateRow(ExRowIndxe)
+                ExRowIndxe += 1
+                For j As Integer = 0 To Dtable.Rows(i).ItemArray.Length - 1
+                    Dim cell As HSSFCell = SheetRow.CreateCell(j)
+                    Dim cellString = Dtable.Rows(i).Item(j).ToString
+                    If cellString.Equals("&nbsp;") Then
+                        cellString = ""
+                    End If
+                    cell.SetCellValue(cellString)
+                    If i Mod 2 = 0 Then
+                        cell.CellStyle = EvenRowStyle
+                    Else
+                        cell.CellStyle = SingleRowStyle
+                    End If
+                Next
+            Next
+
+            ExcelBook.Write(MS)
+            'AddHeader若沒寫，會直接print在本網頁上
+            HttpContext.Current.Response.AddHeader("Content-Disposition", String.Format("attachment; filename=ExportExcel.xls"))
+            HttpContext.Current.Response.BinaryWrite(MS.ToArray())
+            ExcelBook = Nothing
+            MS.Close()
+            MS.Dispose()
+        End Sub
