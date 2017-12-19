@@ -1,0 +1,14 @@
+						Dim aRows = From c In GetPackingOrderSource.AsEnumerable Where c.Field(Of String)("CusOrderTitle") = CusOrderTitle And c.Field(Of String)("CusOrderNumber") = CusOrderNumber And c.Field(Of String)("CusOrderSN") = CusOrderSN And c.Field(Of String)("Port") = PortA
+                        Select c.Field(Of Integer)("TotalPCS")
+                        Dim a = aRows.Sum
+						
+						
+						Dim MaterialRow = From c In Material_DT.AsEnumerable Where c.Field(Of String)("BaseCode") = CatchBaseCode
+						Select c
+
+						If MaterialRow.Count > 0 Then
+							CatchSource_Dt = MaterialRow.CopyToDataTable()
+							row(1) = CatchSource_Dt.Rows(0).Item("MaterialQuality").ToString.Trim
+						Else
+							row(1) = "ERROR"
+						End If
