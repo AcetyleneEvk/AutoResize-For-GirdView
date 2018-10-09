@@ -1,0 +1,29 @@
+            switch (mainToolBar.Buttons.IndexOf(e.Button))
+            {
+                case 0:
+                    MessageBox.Show("Add New file code here");
+                    break;
+                case 1:
+                    OpenFileDialog openDlg = new OpenFileDialog();
+                    if (DialogResult.OK == openDlg.ShowDialog())
+                    {
+                        string fileName = openDlg.FileName;
+                        MessageBox.Show(fileName);
+                    }
+                    break;
+                case 2:
+                    SaveFileDialog saveDlg = new SaveFileDialog();
+                    if (DialogResult.OK == saveDlg.ShowDialog())
+                    {
+                        string fileName = saveDlg.FileName;
+                        MessageBox.Show(fileName);
+                    }
+                    break;
+                case 3:
+                    PrintDialog printDlg = new PrintDialog();
+                    printDlg.ShowDialog();
+                    break;
+                case 4:
+                    this.Close();
+                    break;
+            }
