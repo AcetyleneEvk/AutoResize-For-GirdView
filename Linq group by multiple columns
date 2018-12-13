@@ -1,0 +1,12 @@
+                                    
+                                    //多筆Group by
+                                    var Distinctresult = WMSMainList.GroupBy(a => new { a.PackNo,a.Description})
+                                 
+                                    .Select(group => new { Data = group.Key, Items = group.ToList() })
+                                    .ToList();
+                    
+                    
+                    //Lineq 多筆Group by 後使用
+                    var ExportERPData = from data in WMSMainList
+                                        where data.PackNo == Distinctresult[i].Data.PackNo.ToString() & data.Description == Distinctresult[i].Data.Description.ToString()
+                                        select data;
